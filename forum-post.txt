@@ -7,7 +7,10 @@ WHAT DOES THIS MOD DO?
 Tells you which mod a thing comes from, only where the game does not tell you already.
 [/b][/center]
 [spoiler=Screenshots]
-[center][img]https://github.com/andrzejsokolowski/starsector-which-mod-renewed/blob/main/screenshots/01-ability-without-codex-link.png?raw=true[/img][/center]
+[center][img]https://github.com/andrzejsokolowski/starsector-which-mod-renewed/blob/main/screenshots/01-ability-without-codex-link.png?raw=true[/img]
+[img]https://github.com/andrzejsokolowski/starsector-which-mod-renewed/blob/main/screenshots/02-item-without-codex-link.webp?raw=true[/img]
+[img]https://github.com/andrzejsokolowski/starsector-which-mod-renewed/blob/main/screenshots/03-item-with-codex-link.webp?raw=true[/img]
+[img]https://github.com/andrzejsokolowski/starsector-which-mod-renewed/blob/main/screenshots/04-lunalib-settings.webp?raw=true[/img][/center]
 [/spoiler]
 [center]
 [hr][center][size=12pt][b]Only What the Game Does Not Show[/b][/size][/center][hr]
