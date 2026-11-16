@@ -77,8 +77,8 @@ public class SelfTestPlugin extends BaseModPlugin {
             JSONObject out = new JSONObject();
             out.put("results", results);
             JSONObject counts = new JSONObject();
-            for (String kind : new String[] {"special item", "hull mod", "description", "skill", "industry",
-                    "condition", "ability", "terrain"}) {
+            for (String kind : new String[] {"items", "hullMods", "ships", "weapons", "shipSystems", "commodities",
+                    "industries", "conditions", "skills", "abilities", "terrain", "starSystems"}) {
                 counts.put(kind, SourceLabels.countOf(kind));
                 if (SourceLabels.isFailed(kind)) counts.put(kind + " FAILED", true);
             }
@@ -130,7 +130,7 @@ public class SelfTestPlugin extends BaseModPlugin {
     }
 
     private void specialItem(String id, String data) {
-        int before = SourceLabels.countOf("special item");
+        int before = SourceLabels.countOf("items");
         Throwable error = null;
         String expect = "?";
         try {
@@ -142,11 +142,11 @@ public class SelfTestPlugin extends BaseModPlugin {
         } catch (Throwable t) {
             error = t;
         }
-        record("special item", data == null ? id : id + ":" + data, expect, "special item", before, error);
+        record("special item", data == null ? id : id + ":" + data, expect, "items", before, error);
     }
 
     private void hullMod(String id) {
-        int before = SourceLabels.countOf("hull mod");
+        int before = SourceLabels.countOf("hullMods");
         Throwable error = null;
         String expect = "?";
         try {
@@ -156,12 +156,13 @@ public class SelfTestPlugin extends BaseModPlugin {
         } catch (Throwable t) {
             error = t;
         }
-        record("hullmod", id, expect, "hull mod", before, error);
+        record("hullmod", id, expect, "hullMods", before, error);
     }
 
     /** StandardTooltipV2.createShipSystemTooltip, the game's own ship system tooltip (reads a Description). */
     private void shipSystem(String id) {
-        int before = SourceLabels.countOf("description");
+        String kindFor = "shipSystems";
+        int before = SourceLabels.countOf(kindFor);
         Throwable error = null;
         String expect = "?";
         try {
@@ -174,12 +175,13 @@ public class SelfTestPlugin extends BaseModPlugin {
         } catch (Throwable t) {
             error = t;
         }
-        record("ship system", id, expect, "description", before, error);
+        record("ship system", id, expect, kindFor, before, error);
     }
 
     /** StandardTooltipV2.createWeaponTooltip, as the refit weapon picker and cargo use it. */
     private void weapon(String id) {
-        int before = SourceLabels.countOf("description");
+        String kindFor = "weapons";
+        int before = SourceLabels.countOf(kindFor);
         Throwable error = null;
         String expect = "?";
         try {
@@ -202,6 +204,6 @@ public class SelfTestPlugin extends BaseModPlugin {
         } catch (Throwable t) {
             error = t;
         }
-        record("weapon", id, expect, "description", before, error);
+        record("weapon", id, expect, kindFor, before, error);
     }
 }

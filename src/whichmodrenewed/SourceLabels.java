@@ -29,7 +29,8 @@ import com.fs.starfarer.api.util.Misc;
 
 /**
  * Finds which mod something comes from (the same {@link WithSourceMod#getSourceMod()} the codex reads)
- * and writes the "Mod: X" line. Things the game ships itself have no source mod and read "Vanilla".
+ * and writes the "Mod: X" line. Things the game ships itself have no source mod and read "Vanilla", and so
+ * do the mods on the Treat as Vanilla list (see {@link Settings}).
  */
 public final class SourceLabels {
 
@@ -48,23 +49,35 @@ public final class SourceLabels {
     private static final Map<String, WithSourceMod> commodities = new HashMap<>();
     private static final Map<String, WithSourceMod> hullMods = new HashMap<>();
     private static final Map<String, WithSourceMod> industries = new HashMap<>();
-    /** Description UID to its label, or "" for descriptions that get none. */
-    private static final Map<String, String> descriptionLabels = new HashMap<>();
+    /** Description UID to its label, or null-label for descriptions that get none. */
+    private static final Map<String, Label> descriptionLabels = new HashMap<>();
+    private static final Label NONE = new Label(null, null);
     private static boolean indexed = false;
     private static boolean iconReady = false;
 
-    /** Kinds of hook that hit an error, so each logs once and then stands down. */
+    /** Hooks that hit an error, so each logs once and then stands down. */
     private static final Map<String, Boolean> failed = new HashMap<>();
-    /** How many labels each kind of hook added this session (logged by the self test). */
+    /** How many lines each kind added this session (read by the self test). */
     private static final Map<String, Integer> counts = new HashMap<>();
     private static final Map<String, String> lastLabels = new HashMap<>();
+
+    /** A view kind (one of the {@link Settings} keys) and the mod name for it. */
+    public static final class Label {
+        public final String kind;
+        public final String name;
+
+        Label(String kind, String name) {
+            this.kind = kind;
+            this.name = name;
+        }
+    }
 
     private SourceLabels() {
     }
 
     /** The mod's display name, or "Vanilla". Percent signs are dropped, some tooltips format their text. */
     public static String name(ModSpecAPI mod) {
-        if (mod == null) return VANILLA;
+        if (mod == null || Settings.isVanillaMod(mod.getId())) return VANILLA;
         String name = mod.getName();
         if (name == null || name.trim().isEmpty()) name = mod.getId();
         if (name == null || name.trim().isEmpty()) return VANILLA;
@@ -104,6 +117,12 @@ public final class SourceLabels {
         }
     }
 
+    /** Settings changed: names may now read differently. */
+    public static void clearCaches() {
+        descriptionLabels.clear();
+        StarSystems.clearCache();
+    }
+
     private static void prepareIcon() {
         if (iconReady) return;
         iconReady = true;
@@ -116,7 +135,7 @@ public final class SourceLabels {
 
     /** Adds the codex-style line (mod icon, "Mod: name") at the bottom of a tooltip. */
     public static void addLine(String kind, TooltipMakerAPI tooltip, ModSpecAPI mod, float pad) {
-        if (tooltip == null || isFailed(kind)) return;
+        if (tooltip == null || isFailed(kind) || !Settings.shows(kind)) return;
         String name = name(mod);
         if (defer(kind, tooltip, name, true)) return;
         draw(kind, tooltip, name, pad);
@@ -149,10 +168,14 @@ public final class SourceLabels {
         if (tooltip instanceof TooltipMakerAPI) builds.push(new Build(tooltip));
     }
 
-    /** The tooltip is filled and about to be sized: the waiting line goes at its bottom now. */
-    public static void endBuild(Object tooltip) {
+    /**
+     * The tooltip is filled and about to be sized: the waiting line goes at its bottom now, unless the
+     * tooltip shows the codex link (it names the mod already) and the player wants it only without one.
+     */
+    public static void endBuild(Object tooltip, boolean hasCodex) {
         Build build = pop(tooltip);
         if (build == null || build.name == null || isFailed(build.kind)) return;
+        if (hasCodex && Settings.onlyWithoutCodex()) return;
         try {
             draw(build.kind, (TooltipMakerAPI) tooltip, build.name, 10f);
         } catch (Throwable t) {
@@ -221,32 +244,43 @@ public final class SourceLabels {
     }
 
     /**
-     * The label for a description read by the game's tooltip code, or null for descriptions that are
-     * not about a thing (interface help text, gallery pictures, asteroids).
+     * The view kind and mod name for a description read by the game's tooltip code, or null for
+     * descriptions that are not about a thing (interface help text, gallery pictures, asteroids) and for
+     * kinds the player turned off.
      */
-    public static String labelFor(Description description) {
+    public static Label labelFor(Description description) {
         if (description == null) return null;
         String uid = description.getUID();
         if (uid == null) return null;
-        String cached = descriptionLabels.get(uid);
-        if (cached == null) {
-            String label = computeLabel(description, uid);
-            cached = label == null ? "" : label;
-            descriptionLabels.put(uid, cached);
+        Label label = descriptionLabels.get(uid);
+        if (label == null) {
+            label = computeLabel(description, uid);
+            descriptionLabels.put(uid, label);
         }
-        return cached.isEmpty() ? null : cached;
+        if (label == NONE || !Settings.shows(label.kind)) return null;
+        return label;
     }
 
-    private static String computeLabel(Description description, String uid) {
+    private static Label computeLabel(Description description, String uid) {
         index();
-        if (uid.endsWith("_ACTION_TOOLTIP") || uid.endsWith("_GALLERY") || uid.endsWith("_ASTEROID")) return null;
+        if (uid.endsWith("_ACTION_TOOLTIP") || uid.endsWith("_GALLERY") || uid.endsWith("_ASTEROID")) return NONE;
         WithSourceMod thing = null;
-        if (uid.endsWith("_SHIP_SYSTEM")) thing = systems.get(cut(uid, "_SHIP_SYSTEM"));
-        else if (uid.endsWith("_SHIP")) thing = hulls.get(cut(uid, "_SHIP"));
-        else if (uid.endsWith("_WEAPON")) thing = weapons.get(cut(uid, "_WEAPON"));
-        else if (uid.endsWith("_RESOURCE")) thing = commodities.get(cut(uid, "_RESOURCE"));
+        String kind = Settings.OTHER_DESCRIPTIONS;
+        if (uid.endsWith("_SHIP_SYSTEM")) {
+            thing = systems.get(cut(uid, "_SHIP_SYSTEM"));
+            kind = Settings.SHIP_SYSTEMS;
+        } else if (uid.endsWith("_SHIP")) {
+            thing = hulls.get(cut(uid, "_SHIP"));
+            kind = Settings.SHIPS;
+        } else if (uid.endsWith("_WEAPON")) {
+            thing = weapons.get(cut(uid, "_WEAPON"));
+            kind = Settings.WEAPONS;
+        } else if (uid.endsWith("_RESOURCE")) {
+            thing = commodities.get(cut(uid, "_RESOURCE"));
+            kind = Settings.COMMODITIES;
+        }
         ModSpecAPI mod = thing != null ? thing.getSourceMod() : description.getSourceMod();
-        return text(mod);
+        return new Label(kind, name(mod));
     }
 
     private static String cut(String uid, String suffix) {

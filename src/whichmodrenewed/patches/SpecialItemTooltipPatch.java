@@ -10,6 +10,7 @@ import patchlib.api.match.ClassMatch;
 import patchlib.api.match.MethodMatch;
 import patchlib.api.patch.After;
 import patchlib.api.patch.Patch;
+import whichmodrenewed.Settings;
 import whichmodrenewed.SourceLabels;
 
 /**
@@ -19,7 +20,7 @@ import whichmodrenewed.SourceLabels;
 @Patch(target = @ClassMatch(subtype = SpecialItemPlugin.class))
 public class SpecialItemTooltipPatch {
 
-    static final String KIND = "special item";
+    static final String KIND = Settings.ITEMS;
 
     @After(target = @MethodMatch(methodName = "createTooltip", parameterCount = 4))
     public static void afterCreateTooltip(AfterContext context) {

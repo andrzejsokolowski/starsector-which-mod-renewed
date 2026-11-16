@@ -10,6 +10,7 @@ import patchlib.api.match.ClassMatch;
 import patchlib.api.match.MethodMatch;
 import patchlib.api.patch.After;
 import patchlib.api.patch.Patch;
+import whichmodrenewed.Settings;
 import whichmodrenewed.SourceLabels;
 
 /**
@@ -20,7 +21,7 @@ import whichmodrenewed.SourceLabels;
 @Patch(target = @ClassMatch(subtype = HullModEffect.class))
 public class HullModTooltipPatch {
 
-    static final String KIND = "hull mod";
+    static final String KIND = Settings.HULL_MODS;
 
     @After(target = @MethodMatch(methodName = "addPostDescriptionSection", parameterCount = 5))
     public static void afterPostDescription(AfterContext context) {

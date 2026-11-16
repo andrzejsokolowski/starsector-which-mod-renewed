@@ -9,13 +9,14 @@ import patchlib.api.match.ClassMatch;
 import patchlib.api.match.MethodMatch;
 import patchlib.api.patch.After;
 import patchlib.api.patch.Patch;
+import whichmodrenewed.Settings;
 import whichmodrenewed.SourceLabels;
 
 /** Campaign ability tooltips (the ability bar and the abilities screen), from every mod. */
 @Patch(target = @ClassMatch(subtype = AbilityPlugin.class))
 public class AbilityTooltipPatch {
 
-    static final String KIND = "ability";
+    static final String KIND = Settings.ABILITIES;
 
     @After(target = @MethodMatch(methodName = "createTooltip", parameterCount = 2))
     public static void afterCreateTooltip(AfterContext context) {

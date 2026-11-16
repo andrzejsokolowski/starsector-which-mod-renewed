@@ -36,5 +36,17 @@ WMR-1 holds Andrzej's original request word for word.
 - Industries: `IndustryLabels` is an `IndustryOptionProvider` listener (transient, added on game load).
   Not a BaseIndustry patch: Theory of Toolbox replaces BaseIndustry and PatchLib cannot patch it then.
 - Every hook skips the codex (`Global.CODEX_TOOLTIP_MODE`) and turns itself off after its first error.
+- Codex link (Andrzej, 1.1.0): `TooltipBuildPatch` skips the line when the tooltip has a codex entry id
+  (the game keeps one only when the entry exists, that is the "F2 codex - mod" footer) or the fields
+  `tempCodexEntry` / `codexFleetMember`. LunaLib `wmr_onlyWithoutCodex` (default on).
+- Treat as Vanilla (`wmr_vanillaMods`, default `yunruHullModsLib, animated_items`): `SourceLabels.name`
+  and `CodexSourcePatch` (After `CodexEntryPlugin.getSourceMod`, returns null) so the codex agrees.
+- Settings: `Settings` holds the values (defaults without LunaLib), `LunaBridge` is the only class that
+  names LunaLib (build check). One switch per view kind, `wmr_show_<kind>`.
+- Star systems (`StarSystems`): procgen = nothing; the 24 vanilla names = Vanilla; `ModPluginScopePatch`
+  tracks which mod plugin runs (new-game steps, onGameLoad) and `StarSystemCreatePatch` stores its id in
+  the system memory `$wmr_sourceMod`; older saves guess from market factions (FACTION description source
+  mod) and modded planet types. Shown by a redirect of `StarSystemAPI.getName` in
+  `StarSystemTooltipFactory$1` (check the inner class number after game updates).
 - `tools/selftest` is a load-test mod (never shipped): it runs the game's tooltip code at application
   load and writes `saves/common/wmr_selftest`. Not run yet: Andrzej tests in game.

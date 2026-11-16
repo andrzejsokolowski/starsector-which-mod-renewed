@@ -10,13 +10,14 @@ import patchlib.api.match.ClassMatch;
 import patchlib.api.match.MethodMatch;
 import patchlib.api.patch.After;
 import patchlib.api.patch.Patch;
+import whichmodrenewed.Settings;
 import whichmodrenewed.SourceLabels;
 
 /** Planet and colony condition tooltips, from every mod. The condition comes from BaseMarketConditionPlugin. */
 @Patch(target = @ClassMatch(subtype = MarketConditionPlugin.class))
 public class ConditionTooltipPatch {
 
-    static final String KIND = "condition";
+    static final String KIND = Settings.CONDITIONS;
 
     @After(target = @MethodMatch(methodName = "createTooltip", parameterCount = 2))
     public static void afterCreateTooltip(AfterContext context) {

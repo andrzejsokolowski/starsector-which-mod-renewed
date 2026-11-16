@@ -9,13 +9,14 @@ import patchlib.api.match.ClassMatch;
 import patchlib.api.match.MethodMatch;
 import patchlib.api.patch.After;
 import patchlib.api.patch.Patch;
+import whichmodrenewed.Settings;
 import whichmodrenewed.SourceLabels;
 
 /** Terrain tooltips on the campaign map (nebulas, storms, fields and modded terrain). */
 @Patch(target = @ClassMatch(subtype = CampaignTerrainPlugin.class))
 public class TerrainTooltipPatch {
 
-    static final String KIND = "terrain";
+    static final String KIND = Settings.TERRAIN;
 
     @After(target = @MethodMatch(methodName = "createTooltip", parameterCount = 2))
     public static void afterCreateTooltip(AfterContext context) {

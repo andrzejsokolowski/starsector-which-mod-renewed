@@ -27,6 +27,8 @@ dependencies {
     def patchLibApi = fileTree(dir: mods, include: '**/jars/PatchLibAPI.jar')
     compileOnly patchLibApi
     annotationProcessor patchLibApi
+    // LunaLib is optional: only LunaBridge names it, and it is loaded only when LunaLib is enabled.
+    compileOnly fileTree(dir: mods, include: '**/jars/LunaLib.jar')
 }
 
 jar {
@@ -106,12 +108,25 @@ tasks.register('checkReleaseFiles') {
                 problems << "UTF-8 BOM in ${projectDir.toPath().relativize(f.toPath())}"
         }
         if (!file('icon.png').isFile()) problems << 'icon.png is missing'
+        file('data/config/LunaSettings.csv').readLines('UTF-8').eachWithIndex { line, i ->
+            if (line.contains('%')) problems << "LunaSettings.csv line ${i + 1} contains % (crashes LunaLib)"
+        }
+        def luna = new groovy.json.JsonSlurper().parse(file('data/config/LunaSettingsConfig.json'))
+        if (!luna.containsKey('which_mod_renewed')) problems << 'LunaLib icon is not keyed by the mod id'
+        luna.each { modId, config -> if (!file(config.iconPath).isFile()) problems << "LunaLib icon missing: ${config.iconPath}" }
+        // Only LunaBridge may name LunaLib, or the mod would need it.
+        fileTree(dir: layout.buildDirectory.dir('classes/java/main').get().asFile, include: '**/*.class').each { f ->
+            if (f.name != 'LunaBridge.class' && new String(f.bytes, 'ISO-8859-1').contains('lunalib/'))
+                problems << "${f.name} names LunaLib (only LunaBridge may)"
+        }
         if (!new File("${starsectorPath}/starsector-core/graphics/ui/icons/codex_mod_info.png").isFile())
             problems << 'the game no longer has graphics/ui/icons/codex_mod_info.png (the tooltip icon)'
         if (problems) throw new GradleException("Release files are not ready:\n  " + problems.join('\n  '))
         logger.lifecycle('Release files verified')
     }
 }
+
+tasks.named('checkReleaseFiles') { dependsOn tasks.named('classes') }
 
 tasks.named('check') {
     dependsOn tasks.named('checkNoForbiddenApis'), tasks.named('checkVersionMetadata'), tasks.named('checkReleaseFiles')
@@ -121,7 +136,7 @@ tasks.named('check') {
 def releaseFiles = copySpec {
     from(projectDir) {
         include 'mod_info.json', 'which_mod_renewed.version', 'LICENSE', 'CREDITS.txt', 'icon.png'
-        include 'data/**', 'jars/WhichModRenewed.jar'
+        include 'data/**', 'graphics/**', 'jars/WhichModRenewed.jar'
     }
 }
 

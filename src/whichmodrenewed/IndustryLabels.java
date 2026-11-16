@@ -16,7 +16,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
  */
 public class IndustryLabels implements IndustryOptionProvider {
 
-    static final String KIND = "industry";
+    static final String KIND = Settings.INDUSTRIES;
 
     @Override
     public List<IndustryOptionData> getIndustryOptions(Industry ind) {
