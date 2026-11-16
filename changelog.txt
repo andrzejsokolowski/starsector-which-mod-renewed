@@ -1,5 +1,5 @@
-Version 1.0.0 (2026-11-16)
-- First release on the forum.
+Version 2.0.0 (2026-11-16)
+- First release on the forum. Numbered 2.0.0 so mod managers offer it over the 1.1.0 test build.
 - Says which mod a thing comes from, or Vanilla, only where the game does not show it already: tooltips without the F2 codex link, which names the mod.
 - Covers ships, fighters, weapons, ship systems, hull mods, special items, blueprints, commodities, industries, conditions, skills, abilities, terrain and star systems on the sector map.
 - Blueprints and modspecs name the mod of what they unlock. Generated star systems show nothing.

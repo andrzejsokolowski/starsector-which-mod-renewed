@@ -56,8 +56,8 @@ My code in this mod is under the CC0 (Creative Commons Zero) License, allowing y
 [/spoiler]
 
 [spoiler=Version log]
-[b]1.0.0[/b]
-[list][li]First release on the forum.[/li]
+[b]2.0.0[/b]
+[list][li]First release on the forum. Numbered 2.0.0 so mod managers offer it over the 1.1.0 test build.[/li]
 [li]Says which mod a thing comes from, or Vanilla, only where the game does not show it already: tooltips without the F2 codex link, which names the mod.[/li]
 [li]Covers ships, fighters, weapons, ship systems, hull mods, special items, blueprints, commodities, industries, conditions, skills, abilities, terrain and star systems on the sector map.[/li]
 [li]Blueprints and modspecs name the mod of what they unlock. Generated star systems show nothing.[/li]
