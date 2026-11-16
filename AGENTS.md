@@ -32,4 +32,4 @@ WMR-1 holds Andrzej's original request word for word.
   Not a BaseIndustry patch: Theory of Toolbox replaces BaseIndustry and PatchLib cannot patch it then.
 - Every hook skips the codex (`Global.CODEX_TOOLTIP_MODE`) and turns itself off after its first error.
 - `tools/selftest` is a load-test mod (never shipped): it runs the game's tooltip code at application
-  load and writes `saves/common/wmr_selftest`. Not run yet: Andrzej tests in game himself.
+  load and writes `saves/common/wmr_selftest`. Not run yet: Andrzej tests in game.
