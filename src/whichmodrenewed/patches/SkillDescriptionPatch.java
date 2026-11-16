@@ -10,8 +10,8 @@ import patchlib.api.patch.RedirectMethodCall;
 import whichmodrenewed.SourceLabels;
 
 /**
- * Skill tooltips (character screen, officers): the skill's description, as the game's tooltip code reads
- * it, ends with the "Mod: X" line. A skill with no description shows just the line.
+ * Skill tooltips (character screen, officers): the "Mod: X" line at the bottom of the tooltip, or after
+ * the skill's description when the tooltip is not one of the game's expandable ones.
  */
 @Patch(target = @ClassMatch(packageName = "com.fs.starfarer.ui.impl"))
 public class SkillDescriptionPatch {
@@ -27,7 +27,12 @@ public class SkillDescriptionPatch {
             return;
         }
         try {
-            String label = SourceLabels.text(SourceLabels.sourceOf(context.getCallReceiver()));
+            String name = SourceLabels.name(SourceLabels.sourceOf(context.getCallReceiver()));
+            if (SourceLabels.defer(KIND, null, name, false)) {
+                context.setResult(original);
+                return;
+            }
+            String label = SourceLabels.PREFIX + name;
             String result = SourceLabels.appendLabel((String) original, label);
             if (result != original) SourceLabels.count(KIND, label);
             context.setResult(result);

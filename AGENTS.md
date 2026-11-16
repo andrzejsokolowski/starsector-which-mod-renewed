@@ -21,8 +21,13 @@ WMR-1 holds Andrzej's original request word for word.
   `graphics/ui/icons/codex_mod_info.png` from the game's own files.
 - Description redirects (`TooltipDescriptionPatch`, `MarketInfoDescriptionPatch`): calls to
   `Description.getText1/getText1FirstPara/getText1Paras` inside the packages `com.fs.starfarer.ui.impl`
-  and `com.fs.starfarer.campaign.ui.marketinfo` get "Mod: X" appended. Covers ships, fighters, weapons,
+  and `com.fs.starfarer.campaign.ui.marketinfo` find the mod. Covers ships, fighters, weapons,
   ship systems and commodities. The id comes from `Description.getUID()` (id + "_" + type).
+- Bottom of the tooltip (Andrzej's ask, WMR-1 Changes): `TooltipBuildPatch` tracks
+  `StandardTooltipV2Expandable.createImpl` (the game fills a tooltip there, then sizes it). While one is
+  being filled, every hook hands its mod name to `SourceLabels.defer` and the line is drawn at the end of
+  createImpl. Plugin hooks win over description names, first wins, one line per tooltip. Outside a
+  build (ship system tooltips are built in one go) the line goes after the description text instead.
 - `SkillDescriptionPatch`: same for `SkillSpec.getDescription` in `ui.impl`.
 - After-hooks on interfaces, most derived call only: `SpecialItemPlugin.createTooltip` (blueprint data
   resolved to the unlocked thing), `HullModEffect.addPostDescriptionSection` (not for modspec items),

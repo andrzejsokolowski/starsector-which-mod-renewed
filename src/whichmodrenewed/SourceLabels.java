@@ -1,5 +1,6 @@
 package whichmodrenewed;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -116,12 +117,76 @@ public final class SourceLabels {
     /** Adds the codex-style line (mod icon, "Mod: name") at the bottom of a tooltip. */
     public static void addLine(String kind, TooltipMakerAPI tooltip, ModSpecAPI mod, float pad) {
         if (tooltip == null || isFailed(kind)) return;
-        prepareIcon();
         String name = name(mod);
+        if (defer(kind, tooltip, name, true)) return;
+        draw(kind, tooltip, name, pad);
+    }
+
+    private static void draw(String kind, TooltipMakerAPI tooltip, String name, float pad) {
+        prepareIcon();
         TooltipMakerAPI row = tooltip.beginImageWithText(ICON, 18f);
         row.addPara(PREFIX + "%s", 0f, Misc.getGrayColor(), Misc.getHighlightColor(), name);
         tooltip.addImageWithText(pad);
         count(kind, PREFIX + name);
+    }
+
+    /** A game tooltip being filled, and the mod name waiting to go at its bottom. */
+    private static final class Build {
+        final Object tooltip;
+        String kind;
+        String name;
+        boolean strong;
+
+        Build(Object tooltip) {
+            this.tooltip = tooltip;
+        }
+    }
+
+    private static final ArrayDeque<Build> builds = new ArrayDeque<>();
+
+    /** The game started filling a tooltip (StandardTooltipV2Expandable.createImpl). */
+    public static void beginBuild(Object tooltip) {
+        if (tooltip instanceof TooltipMakerAPI) builds.push(new Build(tooltip));
+    }
+
+    /** The tooltip is filled and about to be sized: the waiting line goes at its bottom now. */
+    public static void endBuild(Object tooltip) {
+        Build build = pop(tooltip);
+        if (build == null || build.name == null || isFailed(build.kind)) return;
+        try {
+            draw(build.kind, (TooltipMakerAPI) tooltip, build.name, 10f);
+        } catch (Throwable t) {
+            fail(build.kind, t);
+        }
+    }
+
+    public static void abortBuild(Object tooltip) {
+        pop(tooltip);
+    }
+
+    private static Build pop(Object tooltip) {
+        while (!builds.isEmpty()) {
+            Build build = builds.pop();
+            if (build.tooltip == tooltip) return build;
+        }
+        return null;
+    }
+
+    /**
+     * Hands a mod name to the tooltip being filled, if there is one (and it is this tooltip, when one is
+     * given). Lines from the item, hull mod, industry and other plugin hooks ("strong") win over names
+     * found in descriptions, and the first of each kind wins, so a tooltip shows one line.
+     */
+    public static boolean defer(String kind, Object tooltip, String name, boolean strong) {
+        Build build = builds.peek();
+        if (build == null) return false;
+        if (tooltip != null && build.tooltip != tooltip) return false;
+        if (build.name == null || (strong && !build.strong)) {
+            build.kind = kind;
+            build.name = name;
+            build.strong = strong;
+        }
+        return true;
     }
 
     public static HullModSpecAPI hullModFor(Object effect) {
