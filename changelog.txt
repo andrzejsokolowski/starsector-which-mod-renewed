@@ -1,0 +1,3 @@
+Version 1.0.0 (2026-11-16)
+- Every tooltip says which mod the thing comes from, or Vanilla: ships, fighters, weapons, hull mods, ship systems, special items, blueprints, commodities, industries, conditions, skills, abilities and terrain.
+- Blueprints and modspecs name the mod of the ship, weapon, fighter, hull mod or industry they unlock.

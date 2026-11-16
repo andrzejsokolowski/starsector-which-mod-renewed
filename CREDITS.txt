@@ -1,0 +1,7 @@
+Which Mod - Renewed, by Oddisz
+
+Ideas from WhichMod by theDragn (ships, weapons and hull mods) and Which-Industry by Kaysaar
+(industries). No code from either: this mod is written from scratch and reads the same source mod
+the game's codex shows.
+
+Requires PatchLib by Lukas04.

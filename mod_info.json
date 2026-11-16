@@ -1,0 +1,15 @@
+{
+  "id": "which_mod_renewed",
+  "name": "Which Mod - Renewed",
+  "author": "Oddisz",
+  "utility": "true",
+  "version": "1.0.0",
+  "description": "Every tooltip says which mod the thing comes from, or Vanilla: ships, fighters, weapons, hull mods, ship systems, special items, blueprints, commodities, industries, conditions, skills, abilities and terrain.",
+  "gameVersion": "0.98.5a-RC4",
+  "jars": ["jars/WhichModRenewed.jar"],
+  "modPlugin": "whichmodrenewed.WhichModRenewedPlugin",
+  "updateCheckURL": "https://raw.githubusercontent.com/andrzejsokolowski/starsector-which-mod-renewed/main/which_mod_renewed.version",
+  "dependencies": [
+    { "id": "patchlib", "name": "! PatchLib !" }
+  ]
+}

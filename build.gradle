@@ -1,0 +1,139 @@
+plugins {
+    id 'java'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+sourceSets.main.java.srcDirs = ['src']
+
+repositories {
+    mavenCentral()
+}
+
+def mods = "${starsectorPath}/mods"
+
+dependencies {
+    // Starsector core (game classes and bundled libs: lwjgl, json, log4j, ...)
+    compileOnly fileTree(dir: "${starsectorPath}/starsector-core", include: '*.jar')
+    // PatchLib: compile against its API jar only. The same jar carries the annotation processor that
+    // checks the patch method signatures.
+    def patchLibApi = fileTree(dir: mods, include: '**/jars/PatchLibAPI.jar')
+    compileOnly patchLibApi
+    annotationProcessor patchLibApi
+}
+
+jar {
+    destinationDirectory = file('jars')
+    archiveFileName = 'WhichModRenewed.jar'
+}
+
+// Starsector's classloader refuses java.io, java.nio.file and java.lang.reflect to mod code, at class
+// resolution time. Catch a stray use at build time by scanning every compiled class's constant pool.
+tasks.register('checkNoForbiddenApis') {
+    dependsOn tasks.named('classes')
+    outputs.upToDateWhen { false }
+    doLast {
+        def forbidden = ['java/io/', 'java/nio/file/', 'java/lang/reflect/']
+        def offenders = []
+        fileTree(dir: layout.buildDirectory.dir('classes/java/main').get().asFile, include: '**/*.class').each { f ->
+            def text = new String(f.bytes, 'ISO-8859-1')
+            forbidden.each { needle ->
+                if (text.contains(needle)) offenders << "${f.name} references ${needle}"
+            }
+        }
+        if (!offenders.isEmpty()) {
+            throw new GradleException("Forbidden API used (Starsector will refuse to load it):\n  " + offenders.join('\n  '))
+        }
+    }
+}
+
+tasks.named('jar') { dependsOn tasks.named('checkNoForbiddenApis') }
+
+/** mod_info.json, the .version file and the Version Checker registration must agree. */
+tasks.register('checkVersionMetadata') {
+    doLast {
+        def infoFile = file('mod_info.json')
+        def versionFile = file('which_mod_renewed.version')
+        def registrationFile = file('data/config/version/version_files.csv')
+        [infoFile, versionFile, registrationFile].each { metadata ->
+            if (!metadata.isFile()) throw new GradleException("Missing update metadata: ${metadata.name}")
+        }
+        def parser = new groovy.json.JsonSlurper()
+        def info = parser.parse(infoFile, 'UTF-8')
+        def remote = parser.parse(versionFile, 'UTF-8')
+        def parts = ['major', 'minor', 'patch'].collect { remote.modVersion?.get(it)?.toString() }
+        if (parts.any { it == null || !(it ==~ /\d+/) } || info.version != parts.join('.'))
+            throw new GradleException('mod_info.json and which_mod_renewed.version must have the same numeric version')
+        def repo = 'https://raw.githubusercontent.com/andrzejsokolowski/starsector-which-mod-renewed/main'
+        def masterUrl = "${repo}/which_mod_renewed.version"
+        def downloadUrl = 'https://github.com/andrzejsokolowski/starsector-which-mod-renewed/releases/latest/download/WhichModRenewed.zip'
+        if (info.id != 'which_mod_renewed' || info.name != remote.modName)
+            throw new GradleException('Update metadata must identify Which Mod - Renewed')
+        if (info.updateCheckURL != masterUrl || remote.masterVersionFile != masterUrl)
+            throw new GradleException('Both update URLs must point to the published .version file')
+        if (remote.directDownloadURL != downloadUrl)
+            throw new GradleException('The update download must point to the WhichModRenewed.zip release asset')
+        if (remote.changelogURL != "${repo}/changelog.txt")
+            throw new GradleException('changelogURL must point to changelog.txt on main')
+        if (info.modThreadId?.toString() != remote.modThreadId?.toString())
+            throw new GradleException('mod_info.json and the .version file must name the same forum topic')
+        if (info.gameVersion != remote.starsectorVersion)
+            throw new GradleException('The supported Starsector versions do not match')
+        if (registrationFile.readLines('UTF-8').findAll { !it.trim().isEmpty() } != ['version file', 'which_mod_renewed.version'])
+            throw new GradleException('Version Checker must register which_mod_renewed.version')
+        if (!file('changelog.txt').getText('UTF-8').startsWith("Version ${info.version} "))
+            throw new GradleException("changelog.txt must start with Version ${info.version}")
+        logger.lifecycle("Update metadata verified for Which Mod - Renewed ${info.version}")
+    }
+}
+
+/** The files that ship: no UTF-8 BOM (it breaks every Starsector JSON), and the icons exist. */
+tasks.register('checkReleaseFiles') {
+    doLast {
+        def problems = []
+        fileTree(projectDir) {
+            include 'mod_info.json', '*.version', 'data/**/*.json', 'data/**/*.csv'
+        }.each { f ->
+            def bytes = f.bytes
+            if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF)
+                problems << "UTF-8 BOM in ${projectDir.toPath().relativize(f.toPath())}"
+        }
+        if (!file('icon.png').isFile()) problems << 'icon.png is missing'
+        if (!new File("${starsectorPath}/starsector-core/graphics/ui/icons/codex_mod_info.png").isFile())
+            problems << 'the game no longer has graphics/ui/icons/codex_mod_info.png (the tooltip icon)'
+        if (problems) throw new GradleException("Release files are not ready:\n  " + problems.join('\n  '))
+        logger.lifecycle('Release files verified')
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('checkNoForbiddenApis'), tasks.named('checkVersionMetadata'), tasks.named('checkReleaseFiles')
+}
+
+// Only what the game loads.
+def releaseFiles = copySpec {
+    from(projectDir) {
+        include 'mod_info.json', 'which_mod_renewed.version', 'LICENSE', 'CREDITS.txt', 'icon.png'
+        include 'data/**', 'jars/WhichModRenewed.jar'
+    }
+}
+
+tasks.register('stageRelease', Sync) {
+    dependsOn tasks.named('jar')
+    with releaseFiles
+    into layout.projectDirectory.dir('WhichModRenewed')
+}
+
+tasks.register('releaseZip', Zip) {
+    dependsOn tasks.named('stageRelease'), tasks.named('check')
+    destinationDirectory = layout.projectDirectory
+    archiveFileName = 'WhichModRenewed.zip'
+    into('WhichModRenewed') { with releaseFiles }
+}

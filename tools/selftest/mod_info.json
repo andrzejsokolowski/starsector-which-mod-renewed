@@ -1,0 +1,12 @@
+{
+  "id": "zz_wmr_selftest",
+  "name": "WMR self test (not for release)",
+  "author": "Oddisz",
+  "utility": "true",
+  "version": "0.0.1",
+  "description": "Load test for Which Mod - Renewed. Writes saves/common/wmr_selftest.",
+  "gameVersion": "0.98.5a-RC4",
+  "jars": ["jars/WMRSelfTest.jar"],
+  "modPlugin": "wmrselftest.SelfTestPlugin",
+  "dependencies": [ { "id": "which_mod_renewed", "name": "Which Mod - Renewed" } ]
+}
