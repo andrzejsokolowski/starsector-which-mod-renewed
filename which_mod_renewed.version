@@ -1,7 +1,8 @@
 {
   "masterVersionFile": "https://raw.githubusercontent.com/andrzejsokolowski/starsector-which-mod-renewed/main/which_mod_renewed.version",
   "modName": "Which Mod - Renewed",
-  "modVersion": { "major": 1, "minor": 1, "patch": 0 },
+  "modThreadId": 36436,
+  "modVersion": { "major": 1, "minor": 0, "patch": 0 },
   "directDownloadURL": "https://github.com/andrzejsokolowski/starsector-which-mod-renewed/releases/latest/download/WhichModRenewed.zip",
   "changelogURL": "https://raw.githubusercontent.com/andrzejsokolowski/starsector-which-mod-renewed/main/changelog.txt",
   "starsectorVersion": "0.98.5a-RC4"

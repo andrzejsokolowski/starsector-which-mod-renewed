@@ -1,10 +1,7 @@
-Version 1.1.0 (2026-11-16)
-- The line shows only in tooltips without the F2 codex link, which already names the mod. A setting turns this off.
-- zzz BlockTags and Animated Colony Items show as Vanilla, also in the codex. The list is a setting.
-- Star systems on the sector map say which mod made them. Generated systems show nothing.
-- Optional LunaLib settings: turn the line on or off for each kind of tooltip.
-
-Version 1.0.1 (2026-11-16)
-- Every tooltip says which mod the thing comes from, or Vanilla: ships, fighters, weapons, hull mods, ship systems, special items, blueprints, commodities, industries, conditions, skills, abilities and terrain.
-- The line sits at the bottom of the tooltip, with the codex mod icon.
-- Blueprints and modspecs name the mod of the ship, weapon, fighter, hull mod or industry they unlock.
+Version 1.0.0 (2026-11-16)
+- First release on the forum.
+- Says which mod a thing comes from, or Vanilla, only where the game does not show it already: tooltips without the F2 codex link, which names the mod.
+- Covers ships, fighters, weapons, ship systems, hull mods, special items, blueprints, commodities, industries, conditions, skills, abilities, terrain and star systems on the sector map.
+- Blueprints and modspecs name the mod of what they unlock. Generated star systems show nothing.
+- zzz BlockTags and Animated Colony Items show as Vanilla, also in the codex.
+- Optional LunaLib settings: one switch per kind, show the line next to codex links too, and the list of mods shown as Vanilla.
