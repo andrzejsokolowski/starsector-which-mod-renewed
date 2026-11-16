@@ -1,0 +1,52 @@
+[center][img width=128]https://raw.githubusercontent.com/andrzejsokolowski/starsector-which-mod-renewed/main/icon.png[/img]
+[size=28pt][url=https://github.com/andrzejsokolowski/starsector-which-mod-renewed/releases/latest][b]Which Mod - Renewed[/b][/url][/size]
+[url=https://github.com/andrzejsokolowski/starsector-which-mod-renewed/releases/latest][img]https://img.shields.io/github/downloads/andrzejsokolowski/starsector-which-mod-renewed/total?style=for-the-badge&label=download[/img][/url]  [url=https://github.com/andrzejsokolowski/starsector-which-mod-renewed][img]https://img.shields.io/github/v/release/andrzejsokolowski/starsector-which-mod-renewed?display_name=tag&sort=semver&style=for-the-badge&label=source[/img][/url]
+[/center]
+[center][b]
+WHAT DOES THIS MOD DO?
+Every tooltip says which mod the thing comes from, or Vanilla.
+[/b][/center]
+[center]
+[hr][center][size=12pt][b]The Line[/b][/size][/center][hr]
+[list]
+[li]At the bottom of the tooltip: the codex mod icon and "Mod: name", or "Mod: Vanilla" for things from the base game.[/li]
+[li]The name is the one the codex shows for that entry.[/li]
+[li]Ships, fighters, weapons, hull mods and ship systems.[/li]
+[li]Special items, including items whose tooltip never shows their description.[/li]
+[li]Blueprints and modspecs name the mod of the ship, weapon, fighter, hull mod or industry they unlock.[/li]
+[li]Commodities, industries and structures, planet conditions.[/li]
+[li]Skills, abilities and terrain on the campaign map.[/li]
+[li]The codex is left as it is, it already shows the mod.[/li]
+[/list]
+
+[hr][center][size=12pt][b]Compatibility[/b][/size][/center][hr]
+[list]
+[li]Needs PatchLib.[/li]
+[li]Turn off WhichMod and Which-Industry, or those tooltips show the mod twice.[/li]
+[li]Saves nothing into your game: safe to add to or remove from a game in progress.[/li]
+[/list]
+
+[hr][center][size=12pt][b]Credits[/b][/size][/center][hr]
+[list]
+[li]The idea comes from WhichMod by theDragn and Which-Industry by Kaysaar. No code from either.[/li]
+[li]PatchLib by Lukas04.[/li]
+[/list]
+[/center]
+
+[spoiler=AI use disclaimer]Some or all assets and code in this mod were created using AI tools:
+[list]
+[li]Code: Claude Code (Claude Opus 5.5)[/li]
+[li]Text (readme and this post): Claude Code (Claude Opus 5.5)[/li]
+[li]Icons: Claude Code (Claude Opus 5.5)[/li][/list]
+[/spoiler]
+
+[spoiler=License]
+My code in this mod is under the CC0 (Creative Commons Zero) License, allowing you to do whatever you want with it, without giving any credit to anyone.
+[/spoiler]
+
+[spoiler=Version log]
+[b]1.0.1[/b]
+[list][li]Every tooltip says which mod the thing comes from, or Vanilla: ships, fighters, weapons, hull mods, ship systems, special items, blueprints, commodities, industries, conditions, skills, abilities and terrain.[/li]
+[li]The line sits at the bottom of the tooltip, with the codex mod icon.[/li]
+[li]Blueprints and modspecs name the mod of the ship, weapon, fighter, hull mod or industry they unlock.[/li][/list]
+[/spoiler]
