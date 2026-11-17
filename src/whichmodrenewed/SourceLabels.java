@@ -23,7 +23,9 @@ import com.fs.starfarer.api.loading.FighterWingSpecAPI;
 import com.fs.starfarer.api.loading.HullModSpecAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.loading.WeaponSpecAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.loading.WithSourceMod;
+import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 
@@ -147,6 +149,37 @@ public final class SourceLabels {
         row.addPara(PREFIX + "%s", 0f, Misc.getGrayColor(), Misc.getHighlightColor(), name);
         tooltip.addImageWithText(pad);
         count(kind, PREFIX + name);
+    }
+
+    /**
+     * The same line as {@link #draw} in a panel of its own, for game tooltips that are not tooltip makers
+     * (the fleet member tooltip of the recovery and deployment screens). Its height is the line's height.
+     */
+    public static CustomPanelAPI linePanel(String kind, String name, float width) {
+        prepareIcon();
+        CustomPanelAPI panel = Global.getSettings().createCustom(width, 20f, null);
+        TooltipMakerAPI tooltip = panel.createUIElement(width, 20f, false);
+        TooltipMakerAPI row = tooltip.beginImageWithText(ICON, 18f);
+        row.addPara(PREFIX + "%s", 0f, Misc.getGrayColor(), Misc.getHighlightColor(), name);
+        tooltip.addImageWithText(0f);
+        float height = Math.max(18f, tooltip.getHeightSoFar());
+        tooltip.getPosition().setSize(width, height);
+        panel.getPosition().setSize(width, height);
+        panel.addUIElement(tooltip).inTL(0f, 0f);
+        count(kind, PREFIX + name);
+        return panel;
+    }
+
+    /** The mod of a ship. A hull without its own (a d-hull of a modded ship) takes its base hull's. */
+    public static ModSpecAPI shipSource(FleetMemberAPI member) {
+        ShipHullSpecAPI hull = member != null ? member.getHullSpec() : null;
+        if (hull == null) return null;
+        ModSpecAPI mod = hull.getSourceMod();
+        if (mod == null && hull.getBaseHullId() != null && !hull.getBaseHullId().equals(hull.getHullId())) {
+            ShipHullSpecAPI base = Global.getSettings().getHullSpec(hull.getBaseHullId());
+            if (base != null) mod = base.getSourceMod();
+        }
+        return mod;
     }
 
     /** A game tooltip being filled, and the mod name waiting to go at its bottom. */

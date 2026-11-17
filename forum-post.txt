@@ -59,6 +59,8 @@ My code in this mod is under the CC0 (Creative Commons Zero) License, allowing y
 [/spoiler]
 
 [spoiler=Version log]
+[b]2.0.2[/b]
+[list][li]Ship tooltips in the ship recovery and combat deployment screens now show the line too. They are a separate, shorter ship tooltip that had no line before.[/li][/list]
 [b]2.0.1[/b]
 [list][li]The line now shows in tooltips whose F2 codex link does not name the mod, such as vanilla things, ship systems and weapons Random Assortment of Things does not label. Before, any codex link hid it.[/li]
 [li]Without Random Assortment of Things the line shows in every tooltip, since the game's codex link never names the mod.[/li][/list]

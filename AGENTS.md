@@ -28,6 +28,15 @@ WMR-1 holds Andrzej's original request word for word.
   being filled, every hook hands its mod name to `SourceLabels.defer` and the line is drawn at the end of
   createImpl. Plugin hooks win over description names, first wins, one line per tooltip. Outside a
   build (ship system tooltips are built in one go) the line goes after the description text instead.
+- Plain fleet member tooltip (2.0.2, WMR-1): `StandardTooltipV2.createFleetMemberTooltipPreDeploy` makes a
+  plain `StandardTooltipV2` (anonymous `$1`, not a tooltip maker) used by recovery, combat deployment and
+  about ten other screens. It refills its content panel (`getContents()`, a `UIPanelAPI`) in `beforeShown`,
+  sizes it, then calls `updateSize` and the base `beforeShown` (which writes the codex footer; RAT names the
+  mod there). `FleetMemberTooltipPatch` marks the tooltip in `beforeShown`, `FleetMemberTooltipSizePatch`
+  (Before `updateSize`) adds the line in its own `CustomPanelAPI` at the panel's bottom (above the
+  "Requires N story points" label, which the game anchors to the bottom edge) and grows the panel; after
+  `beforeShown`, if the footer names the mod (" - "), the line comes out and `updateSize` runs again. A ship
+  line from a description in the same `beforeShown` means the tooltip has one already.
 - `SkillDescriptionPatch`: same for `SkillSpec.getDescription` in `ui.impl`.
 - After-hooks on interfaces, most derived call only: `SpecialItemPlugin.createTooltip` (blueprint data
   resolved to the unlocked thing), `HullModEffect.addPostDescriptionSection` (not for modspec items),
