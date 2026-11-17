@@ -1,3 +1,7 @@
+Version 2.0.1 (2026-11-17)
+- The line now shows in tooltips whose F2 codex link does not name the mod, such as vanilla things, ship systems and weapons Random Assortment of Things does not label. Before, any codex link hid it.
+- Without Random Assortment of Things the line shows in every tooltip, since the game's codex link never names the mod.
+
 Version 2.0.0 (2026-11-16)
 - First release on the forum. Numbered 2.0.0 so mod managers offer it over the 1.1.0 test build.
 - Says which mod a thing comes from, or Vanilla, only where the game does not show it already: tooltips without the F2 codex link, which names the mod.

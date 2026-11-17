@@ -36,9 +36,13 @@ WMR-1 holds Andrzej's original request word for word.
 - Industries: `IndustryLabels` is an `IndustryOptionProvider` listener (transient, added on game load).
   Not a BaseIndustry patch: Theory of Toolbox replaces BaseIndustry and PatchLib cannot patch it then.
 - Every hook skips the codex (`Global.CODEX_TOOLTIP_MODE`) and turns itself off after its first error.
-- Codex link (Andrzej, 1.1.0): `TooltipBuildPatch` skips the line when the tooltip has a codex entry id
-  (the game keeps one only when the entry exists, that is the "F2 codex - mod" footer) or the fields
-  `tempCodexEntry` / `codexFleetMember`. LunaLib `wmr_onlyWithoutCodex` (default on).
+- Codex link (1.1.0, fixed in 2.0.1): the game's "Press F2 to open Codex" footer never names the mod; the
+  " - mod" part is Random Assortment of Things' `WhichModPatch` (After `makeExpandable` and
+  `toggleExpandedLabelAndBoolean`, only when the entry has a source mod and RAT's per-kind LunaLib switch is
+  on). `TooltipBuildPatch` skips the line only when the footer names the mod: codex-only tooltips get their
+  footer inside createImpl, so it reads `expandLabel` text (" - "); tooltips with a second key
+  (`expandHotkeyStr2`, F1 more info) get it after createImpl, so it checks RAT's rule and switches.
+  No RAT = the line always shows. LunaLib `wmr_onlyWithoutCodex` (default on).
 - Treat as Vanilla (`wmr_vanillaMods`, default `yunruHullModsLib, animated_items`): `SourceLabels.name`
   and `CodexSourcePatch` (After `CodexEntryPlugin.getSourceMod`, returns null) so the codex agrees.
 - Settings: `Settings` holds the values (defaults without LunaLib), `LunaBridge` is the only class that

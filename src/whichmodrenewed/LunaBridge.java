@@ -17,6 +17,11 @@ final class LunaBridge implements LunaSettingsListener {
         return LunaSettings.getBoolean(Settings.MOD_ID, key);
     }
 
+    /** Another mod's LunaLib switch (Random Assortment of Things, to know what its codex footer shows). */
+    static Boolean bool(String modId, String key) {
+        return LunaSettings.getBoolean(modId, key);
+    }
+
     static String string(String key) {
         return LunaSettings.getString(Settings.MOD_ID, key);
     }

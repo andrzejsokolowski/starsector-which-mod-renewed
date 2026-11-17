@@ -92,9 +92,22 @@ public final class Settings {
         return value == null || value;
     }
 
-    /** Skip the line in tooltips that show the codex link, which already names the mod. */
+    /** Skip the line in tooltips whose codex link already names the mod (Random Assortment of Things adds it). */
     public static boolean onlyWithoutCodex() {
         return onlyWithoutCodex;
+    }
+
+    /**
+     * A LunaLib switch of another mod, or null when LunaLib is off or the switch is unknown. Read each time:
+     * that mod's player can change it while the game runs.
+     */
+    public static Boolean otherModBool(String modId, String key) {
+        if (!luna) return null;
+        try {
+            return LunaBridge.bool(modId, key);
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     public static boolean isVanillaMod(String modId) {

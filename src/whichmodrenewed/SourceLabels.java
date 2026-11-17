@@ -170,12 +170,12 @@ public final class SourceLabels {
 
     /**
      * The tooltip is filled and about to be sized: the waiting line goes at its bottom now, unless the
-     * tooltip shows the codex link (it names the mod already) and the player wants it only without one.
+     * tooltip's codex link footer already names the mod (see TooltipBuildPatch).
      */
-    public static void endBuild(Object tooltip, boolean hasCodex) {
+    public static void endBuild(Object tooltip, boolean footerNamesMod) {
         Build build = pop(tooltip);
         if (build == null || build.name == null || isFailed(build.kind)) return;
-        if (hasCodex && Settings.onlyWithoutCodex()) return;
+        if (footerNamesMod) return;
         try {
             draw(build.kind, (TooltipMakerAPI) tooltip, build.name, 10f);
         } catch (Throwable t) {
