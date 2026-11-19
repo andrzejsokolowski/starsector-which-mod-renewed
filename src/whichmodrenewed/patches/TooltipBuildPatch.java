@@ -18,6 +18,9 @@ import patchlib.api.patch.After;
 import patchlib.api.patch.Before;
 import patchlib.api.patch.Except;
 import patchlib.api.patch.Patch;
+import patchlib.api.query.FieldQuery;
+import patchlib.api.ref.Ref;
+import patchlib.api.spec.FieldQuerySpec;
 import whichmodrenewed.Settings;
 import whichmodrenewed.SourceLabels;
 
@@ -40,6 +43,7 @@ import whichmodrenewed.SourceLabels;
 public class TooltipBuildPatch {
 
     private static final String RAT = "assortment_of_things";
+    private static final FieldQuerySpec PREV = FieldQuery.create().fieldName("prev").build();
 
     /** RAT's codex entry prefixes and the switch that turns its footer on for each. */
     private static final String[][] RAT_SWITCHES = {
@@ -68,7 +72,37 @@ public class TooltipBuildPatch {
     @After(target = @MethodMatch(methodName = "createImpl", parameterCount = 1))
     public static void afterCreate(AfterContext context) {
         if (!context.isMostDerivedCall()) return;
+        Ref<Object> last = lastAdded(context);
+        Object lastBlock = last != null ? last.get() : null;
         SourceLabels.endBuild(context.getSelf(), footerNamesMod(context));
+        keepLastBlock(last, lastBlock);
+    }
+
+    /**
+     * The tooltip's "last added" field (what getPrev() returns). Every add moves it, so after our line it
+     * points at the line.
+     */
+    private static Ref<Object> lastAdded(AfterContext context) {
+        try {
+            return context.hasField(PREV) ? context.<Object>getField(PREV) : null;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
+     * Weapon tooltips end with a nested stats block (Primary data, Ancillary data). Other mods find that
+     * block with getPrev(): Unthemed Weapons Collection's refit stats (500 (725)) skip the tooltip when the
+     * last thing is not that block. So when the tooltip ended with a nested block before our line, the
+     * field points at the block again. The tooltip's size counts the line either way, and nothing the game
+     * adds after createImpl is placed from this field in the refit screen.
+     */
+    private static void keepLastBlock(Ref<Object> last, Object lastBlock) {
+        if (last == null || !(lastBlock instanceof TooltipMakerAPI)) return;
+        try {
+            if (last.get() != lastBlock) last.set(lastBlock);
+        } catch (Throwable ignored) {
+        }
     }
 
     @Except(target = @MethodMatch(methodName = "createImpl", parameterCount = 1))

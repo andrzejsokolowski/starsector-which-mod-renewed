@@ -3,7 +3,7 @@
   "name": "Which Mod - Renewed",
   "author": "Oddisz",
   "utility": "true",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "modThreadId": "36436",
   "description": "Says which mod a thing comes from, only where the game does not already show it: tooltips whose codex link does not name the mod and star systems on the sector map. Every kind can be turned on or off with LunaLib.",
   "gameVersion": "0.98.5a-RC4",

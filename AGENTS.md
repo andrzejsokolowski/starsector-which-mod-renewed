@@ -28,6 +28,12 @@ WMR-1 holds Andrzej's original request word for word.
   being filled, every hook hands its mod name to `SourceLabels.defer` and the line is drawn at the end of
   createImpl. Plugin hooks win over description names, first wins, one line per tooltip. Outside a
   build (ship system tooltips are built in one go) the line goes after the description text instead.
+- Keep the tooltip's last block (2.0.3, WMR-1): every add moves the tooltip's `prev` field (what
+  `getPrev()` returns). Weapon tooltips end with a nested stats block, and Unthemed Weapons Collection
+  finds it with `getPrev()` to write the ship's numbers in the refit screen (500 (725)); our line made it
+  skip the tooltip. When `prev` was a nested `TooltipMakerAPI` before our line, `TooltipBuildPatch` sets it
+  back. The size comes from the `height` field, not `prev`, and the refit screen adds nothing after
+  createImpl, so the line still fits and nothing lands on top of it.
 - Plain fleet member tooltip (2.0.2, WMR-1): `StandardTooltipV2.createFleetMemberTooltipPreDeploy` makes a
   plain `StandardTooltipV2` (anonymous `$1`, not a tooltip maker) used by recovery, combat deployment and
   about ten other screens. It refills its content panel (`getContents()`, a `UIPanelAPI`) in `beforeShown`,

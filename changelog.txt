@@ -1,3 +1,6 @@
+Version 2.0.3 (2026-11-19)
+- Unthemed Weapons Collection's refit stats (the ship's own numbers next to a weapon's, like 500 (725)) show again on weapons with the Mod line, such as vanilla weapons. The line hid them.
+
 Version 2.0.2 (2026-11-17)
 - Ship tooltips in the ship recovery and combat deployment screens now show the line too. They are a separate, shorter ship tooltip that had no line before.
 
